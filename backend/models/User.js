@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'female',
     },
+    role: {
+      type: String,
+      enum: ['passenger', 'driver'],
+      default: 'passenger',
+    },
   },
   { timestamps: true }
 );

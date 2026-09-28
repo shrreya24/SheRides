@@ -14,24 +14,24 @@ const {
   getIncomingRequests,
   getMyRequests,
 } = require('../controllers/rideController');
-const { protect } = require('../middleware/auth');
+const { protect, authorizeRoles } = require('../middleware/auth');
 
 // Specific routes before :id
 router.get('/my-rides', protect, getMyRides);
-router.get('/requests/incoming', protect, getIncomingRequests);
-router.get('/requests/mine', protect, getMyRequests);
+router.get('/requests/incoming', protect, authorizeRoles('driver'), getIncomingRequests);
+router.get('/requests/mine', protect, authorizeRoles('passenger'), getMyRequests);
 
 // General routes
 router.get('/', getRides);
-router.post('/', protect, createRide);
+router.post('/', protect, authorizeRoles('driver'), createRide);
 
 // Ride-specific routes
 router.get('/:id', getRideById);
-router.post('/:id/request', protect, requestRide);
-router.delete('/:id/request', protect, cancelRequest);
-router.put('/:id/request/:passengerId', protect, handleRequest);
-router.put('/:id/start', protect, startRide);
-router.put('/:id/complete', protect, completeRide);
-router.put('/:id/cancel', protect, cancelRide);
+router.post('/:id/request', protect, authorizeRoles('passenger'), requestRide);
+router.delete('/:id/request', protect, authorizeRoles('passenger'), cancelRequest);
+router.put('/:id/request/:passengerId', protect, authorizeRoles('driver'), handleRequest);
+router.put('/:id/start', protect, authorizeRoles('driver'), startRide);
+router.put('/:id/complete', protect, authorizeRoles('driver'), completeRide);
+router.put('/:id/cancel', protect, authorizeRoles('driver'), cancelRide);
 
 module.exports = router;

@@ -51,7 +51,8 @@ const getRides = async (req, res) => {
       .populate('driver', 'name profilePhoto rating ridesCount status isVerified')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit))
+      .lean();
 
     res.json({
       success: true,
@@ -73,7 +74,8 @@ const getRideById = async (req, res) => {
   try {
     const ride = await Ride.findById(req.params.id)
       .populate('driver', 'name profilePhoto rating ridesCount status isVerified phone')
-      .populate('passengers.user', 'name profilePhoto rating');
+      .populate('passengers.user', 'name profilePhoto rating')
+      .lean();
 
     if (!ride) {
       return res.status(404).json({ success: false, message: 'Ride not found.' });

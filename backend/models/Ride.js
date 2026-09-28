@@ -90,4 +90,9 @@ rideSchema.pre('save', async function () {
   }
 });
 
+// Query Optimization Indexes
+rideSchema.index({ status: 1, seatsLeft: 1 });
+rideSchema.index({ from: 1, to: 1, date: 1 });
+rideSchema.index({ driver: 1 });
+
 module.exports = mongoose.model('Ride', rideSchema);

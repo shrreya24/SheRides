@@ -14,7 +14,7 @@ const generateToken = (id) => {
 // @access  Public
 const register = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role } = req.body;
 
     if (!name || !email || !phone || !password) {
       return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
@@ -25,7 +25,7 @@ const register = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email already registered.' });
     }
 
-    const user = await User.create({ name, email, phone, password });
+    const user = await User.create({ name, email, phone, password, role: role || 'passenger' });
 
     const token = generateToken(user._id);
 
@@ -42,6 +42,7 @@ const register = async (req, res) => {
         rating: user.rating,
         ridesCount: user.ridesCount,
         status: user.status,
+        role: user.role,
       },
     });
   } catch (err) {
@@ -81,6 +82,7 @@ const login = async (req, res) => {
         rating: user.rating,
         ridesCount: user.ridesCount,
         status: user.status,
+        role: user.role,
       },
     });
   } catch (err) {

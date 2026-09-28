@@ -18,14 +18,16 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { to: '/',         label: 'Home',       end: true },
-    { to: '/search',   label: 'Find Rides',  end: false },
-    { to: '/community',label: 'Community',  end: false },
+    { to: '/',         label: 'Home',       end: true,  roles: ['all'] },
+    { to: '/search',   label: 'Find Rides', end: false, roles: ['passenger'] },
+    { to: '/community',label: 'Community',  end: false, roles: ['all'] },
     ...(user ? [
-      { to: '/post',     label: 'Post a Ride', end: false },
-      { to: '/requests', label: 'Requests',    end: false },
+      { to: '/post',     label: 'Post a Ride', end: false, roles: ['driver'] },
+      { to: '/requests', label: 'Requests',    end: false, roles: ['all'] },
     ] : []),
-  ];
+  ].filter(link => 
+    link.roles.includes('all') || (user && link.roles.includes(user.role))
+  );
 
   return (
     <header className="header">

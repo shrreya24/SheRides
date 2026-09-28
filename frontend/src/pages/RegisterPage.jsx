@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', role: 'passenger' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -121,6 +121,20 @@ const RegisterPage = () => {
               >
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">How will you use SheRides? <span className="required">*</span></label>
+            <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
+              <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: form.role === 'passenger' ? 'var(--bg-lavender)' : 'transparent', borderColor: form.role === 'passenger' ? 'var(--lavender)' : 'var(--border)' }}>
+                <input type="radio" name="role" value="passenger" checked={form.role === 'passenger'} onChange={handleChange} style={{ accentColor: 'var(--lavender)' }} />
+                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>Passenger</span>
+              </label>
+              <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', cursor: 'pointer', background: form.role === 'driver' ? 'var(--bg-lavender)' : 'transparent', borderColor: form.role === 'driver' ? 'var(--lavender)' : 'var(--border)' }}>
+                <input type="radio" name="role" value="driver" checked={form.role === 'driver'} onChange={handleChange} style={{ accentColor: 'var(--lavender)' }} />
+                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-main)' }}>Driver</span>
+              </label>
             </div>
           </div>
 
