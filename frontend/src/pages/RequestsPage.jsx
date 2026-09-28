@@ -10,7 +10,8 @@ const getInitials = (name = '') =>
   name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
 const RequestsPage = () => {
-  const [tab, setTab] = useState('incoming');
+  const { user } = useAuth();
+  const [tab, setTab] = useState(user?.role === 'driver' ? 'incoming' : 'mine');
   const [incoming, setIncoming] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +22,13 @@ const RequestsPage = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [inRes, myRes] = await Promise.all([
-        rideAPI.getIncomingRequests(),
-        rideAPI.getMyRequests(),
-      ]);
-      setIncoming(inRes.data.requests);
-      setMyRequests(myRes.data.requests);
+      if (user?.role === 'driver') {
+        const { data } = await rideAPI.getIncomingRequests();
+        setIncoming(data.requests);
+      } else {
+        const { data } = await rideAPI.getMyRequests();
+        setMyRequests(data.requests);
+      }
     } catch {
       toast.error('Failed to load requests.');
     } finally {
@@ -77,18 +79,21 @@ const RequestsPage = () => {
         </div>
 
         <div className="tab-bar">
-          <button
-            className={`tab-btn ${tab === 'incoming' ? 'active' : ''}`}
-            onClick={() => setTab('incoming')}
-          >
-            Incoming {incoming.length > 0 && `(${incoming.length})`}
-          </button>
-          <button
-            className={`tab-btn ${tab === 'mine' ? 'active' : ''}`}
-            onClick={() => setTab('mine')}
-          >
-            My Requests
-          </button>
+          {user?.role === 'driver' ? (
+            <button
+              className={`tab-btn ${tab === 'incoming' ? 'active' : ''}`}
+              onClick={() => setTab('incoming')}
+            >
+              Incoming {incoming.length > 0 && `(${incoming.length})`}
+            </button>
+          ) : (
+            <button
+              className={`tab-btn ${tab === 'mine' ? 'active' : ''}`}
+              onClick={() => setTab('mine')}
+            >
+              My Requests
+            </button>
+          )}
         </div>
 
         {loading ? (
