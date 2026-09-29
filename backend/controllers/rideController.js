@@ -98,12 +98,70 @@ const getMyRides = async (req, res) => {
 
     const bookedRides = await Ride.find({
       'passengers.user': req.user._id,
-      'passengers.status': 'accepted',
     })
       .populate('driver', 'name profilePhoto rating ridesCount status isVerified')
       .sort({ createdAt: -1 });
 
     res.json({ success: true, offeredRides, bookedRides });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// @desc    Instantly book / confirm a seat (passenger)
+// @route   POST /api/rides/:id/book
+// @access  Private (passenger only)
+const bookRide = async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+
+    if (!ride) {
+      return res.status(404).json({ success: false, message: 'Ride not found.' });
+    }
+
+    if (ride.driver.toString() === req.user._id.toString()) {
+      return res.status(400).json({ success: false, message: 'You cannot book your own ride.' });
+    }
+
+    if (!['scheduled', 'active'].includes(ride.status)) {
+      return res.status(400).json({ success: false, message: 'This ride is no longer available.' });
+    }
+
+    if (ride.seatsLeft <= 0) {
+      return res.status(400).json({ success: false, message: 'No seats available.' });
+    }
+
+    const alreadyBooked = ride.passengers.find(
+      (p) => p.user.toString() === req.user._id.toString()
+    );
+    if (alreadyBooked) {
+      return res.status(400).json({ success: false, message: 'You have already joined this ride.' });
+    }
+
+    // Instantly accept the passenger and decrement seat
+    ride.passengers.push({
+      user: req.user._id,
+      message: req.body.message || '',
+      status: 'accepted',
+    });
+    ride.seatsLeft -= 1;
+    await ride.save();
+
+    await ride.populate('driver', 'name profilePhoto');
+    await ride.populate('passengers.user', 'name profilePhoto rating');
+
+    // Notify driver via socket
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`user_${ride.driver._id}`).emit('seat-booked', {
+        rideId: ride._id,
+        from: ride.from,
+        to: ride.to,
+        passengerName: req.user.name,
+      });
+    }
+
+    res.status(201).json({ success: true, message: 'Seat confirmed! You are booked.', ride });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -407,6 +465,7 @@ module.exports = {
   getRides,
   getRideById,
   getMyRides,
+  bookRide,
   requestRide,
   handleRequest,
   cancelRequest,

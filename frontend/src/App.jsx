@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
-import ProtectedRoute from './components/ProtectedRoute';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -14,6 +13,23 @@ import RequestsPage from './pages/RequestsPage';
 import ProfilePage from './pages/ProfilePage';
 import LiveMapPage from './pages/LiveMapPage';
 import CommunityPage from './pages/CommunityPage';
+
+// Guard that requires auth + specific role; redirects if wrong role
+const RoleRoute = ({ children, role }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="spinner"><div className="spinner-ring" /></div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (role && user.role !== role) return <Navigate to="/" replace />;
+  return children;
+};
+
+// Guard that just requires auth (any role)
+const AuthRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="spinner"><div className="spinner-ring" /></div>;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
 
 function App() {
   return (
@@ -46,15 +62,19 @@ function App() {
             <Route path="/login"     element={<LoginPage />} />
             <Route path="/register"  element={<RegisterPage />} />
             <Route path="/"          element={<HomePage />} />
-            <Route path="/search"    element={<SearchPage />} />
             <Route path="/community" element={<CommunityPage />} />
 
-            {/* Protected routes */}
-            <Route path="/post"       element={<ProtectedRoute><PostRidePage /></ProtectedRoute>} />
-            <Route path="/rides/:id"  element={<ProtectedRoute><RideDetailPage /></ProtectedRoute>} />
-            <Route path="/requests"   element={<ProtectedRoute><RequestsPage /></ProtectedRoute>} />
-            <Route path="/profile"    element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-            <Route path="/live/:id"   element={<ProtectedRoute><LiveMapPage /></ProtectedRoute>} />
+            {/* Passenger-only routes */}
+            <Route path="/search"    element={<RoleRoute role="passenger"><SearchPage /></RoleRoute>} />
+
+            {/* Driver-only routes */}
+            <Route path="/post"      element={<RoleRoute role="driver"><PostRidePage /></RoleRoute>} />
+            <Route path="/requests"  element={<RoleRoute role="driver"><RequestsPage /></RoleRoute>} />
+
+            {/* Auth-only routes (any role) */}
+            <Route path="/rides/:id" element={<AuthRoute><RideDetailPage /></AuthRoute>} />
+            <Route path="/profile"   element={<AuthRoute><ProfilePage /></AuthRoute>} />
+            <Route path="/live/:id"  element={<AuthRoute><LiveMapPage /></AuthRoute>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

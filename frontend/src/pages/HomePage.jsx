@@ -82,14 +82,20 @@ const HomePage = () => {
 
           <div className="hero-actions">
             {user ? (
-              <>
+              user.role === 'passenger' ? (
                 <Link to="/search" className="btn btn-white btn-lg">
                   <MapPin size={18} /> Find a Ride
                 </Link>
-                <Link to="/post" className="btn btn-ghost btn-lg">
-                  <Car size={18} /> Offer a Ride
-                </Link>
-              </>
+              ) : (
+                <>
+                  <Link to="/post" className="btn btn-white btn-lg">
+                    <Car size={18} /> Post a Ride
+                  </Link>
+                  <Link to="/requests" className="btn btn-ghost btn-lg">
+                    <Users size={18} /> View Requests
+                  </Link>
+                </>
+              )
             ) : (
               <>
                 <Link to="/register" className="btn btn-white btn-lg">

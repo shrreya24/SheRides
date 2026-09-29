@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Car, Menu, X, LogOut } from 'lucide-react';
+import { Car, Menu, X, LogOut, Search, Users, Home, PlusCircle, Bell, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const getInitials = (name = '') =>
@@ -17,17 +17,31 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
-  const navLinks = [
-    { to: '/',         label: 'Home',       end: true,  roles: ['all'] },
-    { to: '/search',   label: 'Find Rides', end: false, roles: ['passenger'] },
-    { to: '/community',label: 'Community',  end: false, roles: ['all'] },
-    ...(user ? [
-      { to: '/post',     label: 'Post a Ride', end: false, roles: ['driver'] },
-      { to: '/requests', label: 'Requests',    end: false, roles: ['all'] },
-    ] : []),
-  ].filter(link => 
-    link.roles.includes('all') || (user && link.roles.includes(user.role))
-  );
+  // Role-based nav links
+  const passengerLinks = [
+    { to: '/',         label: 'Home',       icon: <Home size={15} />,       end: true  },
+    { to: '/search',   label: 'Find Rides', icon: <Search size={15} />,     end: false },
+    { to: '/profile',  label: 'My Rides',   icon: <User size={15} />,       end: false },
+    { to: '/community',label: 'Community',  icon: <Users size={15} />,      end: false },
+  ];
+
+  const driverLinks = [
+    { to: '/',         label: 'Home',        icon: <Home size={15} />,       end: true  },
+    { to: '/post',     label: 'Post a Ride', icon: <PlusCircle size={15} />, end: false },
+    { to: '/requests', label: 'Requests',    icon: <Bell size={15} />,       end: false },
+    { to: '/community',label: 'Community',   icon: <Users size={15} />,      end: false },
+  ];
+
+  const guestLinks = [
+    { to: '/',         label: 'Home',      icon: <Home size={15} />,  end: true  },
+    { to: '/community',label: 'Community', icon: <Users size={15} />, end: false },
+  ];
+
+  const navLinks = !user
+    ? guestLinks
+    : user.role === 'driver'
+    ? driverLinks
+    : passengerLinks;
 
   return (
     <header className="header">
@@ -67,8 +81,8 @@ const Navbar = () => {
                   ? <img src={user.profilePhoto} alt={user.name} />
                   : getInitials(user.name)}
               </NavLink>
-              <span className="header-user-name" style={{ display: 'none', ['@media (min-width: 900px)']: { display: 'block' } }}>
-                {user.name.split(' ')[0]}
+              <span className="header-user-role-badge">
+                {user.role === 'driver' ? '🚗 Driver' : '🎒 Passenger'}
               </span>
               <button onClick={handleLogout} className="btn btn-sm btn-secondary" style={{ gap: 6 }}>
                 <LogOut size={14} /> Logout
@@ -96,18 +110,27 @@ const Navbar = () => {
               key={l.to}
               to={l.to}
               end={l.end}
-              className={({ isActive }) => `header-nav-link${isActive ? ' active' : ''}`}
+              className={({ isActive }) => `header-nav-link mobile-nav-link${isActive ? ' active' : ''}`}
               onClick={() => setMenuOpen(false)}
-              style={{ display: 'block', padding: '10px 16px' }}
             >
+              {l.icon}
               {l.label}
             </NavLink>
           ))}
           {user ? (
             <>
-              <NavLink to="/profile" className="header-nav-link" onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 16px' }}>
-                Profile
-              </NavLink>
+              <div className="mobile-nav-divider" />
+              <div className="mobile-nav-user">
+                <div className="driver-avatar" style={{ width: 32, height: 32, fontSize: '0.75rem' }}>
+                  {user.profilePhoto
+                    ? <img src={user.profilePhoto} alt={user.name} />
+                    : getInitials(user.name)}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-primary)' }}>{user.name.split(' ')[0]}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{user.role}</div>
+                </div>
+              </div>
               <button className="btn btn-sm btn-secondary" onClick={handleLogout} style={{ marginTop: 8, width: '100%', gap: 6 }}>
                 <LogOut size={14} /> Logout
               </button>

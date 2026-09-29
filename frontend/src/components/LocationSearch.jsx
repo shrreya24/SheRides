@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MapPin, Loader } from 'lucide-react';
 
-const LocationSearch = ({ value, onChange, placeholder = 'Search location...', label, required = false }) => {
+const LocationSearch = ({ value, onChange, onType, placeholder = 'Search location...', label, required = false }) => {
     const [query, setQuery] = useState(value || '');
     const [suggestions, setSuggestions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -60,6 +60,8 @@ const LocationSearch = ({ value, onChange, placeholder = 'Search location...', l
         const val = e.target.value;
         setQuery(val);
         selectedRef.current = false;
+        // Notify parent of typed text immediately (for plain-text search)
+        if (onType) onType(val);
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             if (!selectedRef.current) search(val);

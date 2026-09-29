@@ -21,7 +21,13 @@ const cleanLocation = (loc = '') => {
   return filtered.slice(0, 2).join(', ');
 };
 
-const RideCard = ({ ride }) => {
+const bookingStatusStyles = {
+  pending:  { bg: '#F5F3FF', color: '#6D28D9', border: '#C4B5FD' },
+  accepted: { bg: '#D1FAE5', color: '#065F46', border: '#6EE7B7' },
+  rejected: { bg: '#FEE2E2', color: '#991B1B', border: '#FCA5A5' },
+};
+
+const RideCard = ({ ride, bookingStatus }) => {
   if (!ride) return null;
 
   const { _id, driver, from, to, date, time, seatsLeft, seats, price, vehicle, status } = ride;
@@ -33,8 +39,23 @@ const RideCard = ({ ride }) => {
     cancelled: 'badge-cancelled',
   }[status] || 'badge-scheduled';
 
+  const bsStyle = bookingStatus ? bookingStatusStyles[bookingStatus] || bookingStatusStyles.pending : null;
+
   return (
-    <Link to={`/rides/${_id}`} className="ride-card fade-in">
+    <Link to={`/rides/${_id}`} className="ride-card fade-in" style={{ position: 'relative' }}>
+      {/* Booking status badge for riders */}
+      {bsStyle && (
+        <span style={{
+          position: 'absolute', top: 12, right: 12,
+          background: bsStyle.bg, color: bsStyle.color,
+          border: `1px solid ${bsStyle.border}`,
+          padding: '3px 10px', borderRadius: 20,
+          fontSize: '0.7rem', fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.04em',
+        }}>
+          {bookingStatus}
+        </span>
+      )}
       {/* Driver Info */}
       <div className="ride-card-header">
         <div className="driver-info">

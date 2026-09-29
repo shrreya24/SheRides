@@ -269,6 +269,45 @@ p {
   gap: 4px;
 }
 
+/* Role badge pill in header */
+.header-user-role-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--bg-lavender);
+  color: var(--lavender-dark);
+  border: 1px solid var(--border-lavender);
+  white-space: nowrap;
+}
+
+/* Mobile nav link with icon */
+.mobile-nav-link {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px !important;
+  border-radius: var(--radius-sm);
+}
+
+.mobile-nav-link.active {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+.mobile-nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
 /* ===== FOOTER ===== */
 .footer {
   background: var(--text-primary);

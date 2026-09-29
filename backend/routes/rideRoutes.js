@@ -5,6 +5,7 @@ const {
   getRides,
   getRideById,
   getMyRides,
+  bookRide,
   requestRide,
   handleRequest,
   cancelRequest,
@@ -27,6 +28,7 @@ router.post('/', protect, authorizeRoles('driver'), createRide);
 
 // Ride-specific routes
 router.get('/:id', getRideById);
+router.post('/:id/book', protect, authorizeRoles('passenger'), bookRide);
 router.post('/:id/request', protect, authorizeRoles('passenger'), requestRide);
 router.delete('/:id/request', protect, authorizeRoles('passenger'), cancelRequest);
 router.put('/:id/request/:passengerId', protect, authorizeRoles('driver'), handleRequest);

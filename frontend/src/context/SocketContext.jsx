@@ -41,6 +41,11 @@ export const SocketProvider = ({ children }) => {
           toast.error(`❌ Your request for ${from} → ${to} was not accepted.`);
         }
       });
+
+      // Driver gets notified when a passenger instantly books a seat
+      s.on('seat-booked', ({ from, to, passengerName }) => {
+        toast.success(`🎉 ${passengerName} booked a seat on your ride: ${from} → ${to}`);
+      });
     }
 
     return () => {

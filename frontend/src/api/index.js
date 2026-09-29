@@ -37,6 +37,7 @@ export const rideAPI = {
   getRides: (params) => API.get('/rides', { params }),
   getRideById: (id) => API.get(`/rides/${id}`),
   getMyRides: () => API.get('/rides/my-rides'),
+  bookRide: (id, data) => API.post(`/rides/${id}/book`, data),
   requestRide: (id, data) => API.post(`/rides/${id}/request`, data),
   cancelRequest: (id) => API.delete(`/rides/${id}/request`),
   handleRequest: (rideId, passengerId, action) =>

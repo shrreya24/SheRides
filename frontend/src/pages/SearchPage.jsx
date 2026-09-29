@@ -34,9 +34,13 @@ const SearchPage = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     const params = {};
-    if (search.from) params.from = search.from;
-    if (search.to) params.to = search.to;
-    if (search.date) params.date = search.date;
+    // Use whatever the user has typed (dropdown pick or free text)
+    const from = search.from.trim();
+    const to   = search.to.trim();
+    const date = search.date.trim();
+    if (from) params.from = from;
+    if (to)   params.to   = to;
+    if (date) params.date = date;
     setPage(1);
     fetchRides(params, 1);
   };
@@ -81,6 +85,7 @@ const SearchPage = () => {
                   value={search.from}
                   placeholder="Starting city or area"
                   onChange={(name) => setSearch((s) => ({ ...s, from: name }))}
+                  onType={(val) => setSearch((s) => ({ ...s, from: val }))}
                 />
               </div>
 
@@ -90,6 +95,7 @@ const SearchPage = () => {
                   value={search.to}
                   placeholder="Destination city or area"
                   onChange={(name) => setSearch((s) => ({ ...s, to: name }))}
+                  onType={(val) => setSearch((s) => ({ ...s, to: val }))}
                 />
               </div>
 

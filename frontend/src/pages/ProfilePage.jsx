@@ -80,6 +80,14 @@ const ProfilePage = () => {
 
   const displayedRides = tab === 'offered' ? myRides.offeredRides : myRides.bookedRides;
 
+  // Helper: get this user's booking status for a booked ride
+  const getBookingStatus = (ride) => {
+    const passenger = ride.passengers?.find(
+      (p) => p.user?.toString() === user._id?.toString() || p.user === user._id
+    );
+    return passenger?.status || 'pending';
+  };
+
   return (
     <>
       <Navbar />
@@ -222,7 +230,13 @@ const ProfilePage = () => {
             <p>Your {tab} rides will appear here</p>
           </div>
         ) : (
-          displayedRides.map(ride => <RideCard key={ride._id} ride={ride} />)
+          displayedRides.map(ride => (
+            <RideCard
+              key={ride._id}
+              ride={ride}
+              bookingStatus={tab === 'booked' ? getBookingStatus(ride) : undefined}
+            />
+          ))
         )}
       </div>
       <Footer />

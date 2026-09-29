@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Calendar, Clock, Users, IndianRupee, Car,
   FileText, Star, ShieldCheck, Navigation, MessageSquare,
-  CheckCircle, XCircle, MapPin,
+  CheckCircle, XCircle, MapPin, Ticket,
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -23,6 +23,7 @@ const RideDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [requesting, setRequesting] = useState(false);
+  const [booking, setBooking] = useState(false);
   const [starting, setStarting] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [reviews, setReviews] = useState([]);
@@ -72,6 +73,19 @@ const RideDetailPage = () => {
       toast.error(err.response?.data?.message || 'Failed to send request.');
     } finally {
       setRequesting(false);
+    }
+  };
+
+  const handleBook = async () => {
+    setBooking(true);
+    try {
+      await rideAPI.bookRide(id, { message });
+      toast.success('🎉 Seat confirmed! You are booked.');
+      fetchRide();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Booking failed.');
+    } finally {
+      setBooking(false);
     }
   };
 
@@ -249,7 +263,7 @@ const RideDetailPage = () => {
           )}
         </div>
 
-        {/* Live tracking button */}
+        {/* Live tracking button — for all (active ride) or accepted passengers */}
         {ride.status === 'active' && (
           <button
             className="btn btn-secondary btn-full"
@@ -258,6 +272,35 @@ const RideDetailPage = () => {
           >
             <Navigation size={16} /> View Live Map
           </button>
+        )}
+
+        {/* Live map shortcut for accepted passengers on scheduled rides */}
+        {!isDriver && myPassenger?.status === 'accepted' && ride.status === 'scheduled' && (
+          <div style={{
+            background: 'linear-gradient(135deg, #EDE9FE, #F5F3FF)',
+            border: '1.5px solid var(--border-lavender)',
+            borderRadius: 'var(--radius-md)',
+            padding: '14px 18px',
+            marginBottom: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Navigation size={18} color="var(--lavender)" />
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--lavender-dark)' }}>Live Tracking Ready</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>Opens when driver starts the ride</div>
+              </div>
+            </div>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => navigate(`/live/${id}`)}
+            >
+              Open Map
+            </button>
+          </div>
         )}
 
         {/* This is your ride banner */}
@@ -296,23 +339,31 @@ const RideDetailPage = () => {
           </button>
         )}
 
-        {/* Passenger actions */}
-        {!isDriver && ride.status === 'scheduled' && !myPassenger && ride.seatsLeft > 0 && (
+        {/* Passenger actions — Confirm & Book Seat */}
+        {!isDriver && ride.status === 'scheduled' && !myPassenger && ride.seatsLeft > 0 && user?.role === 'passenger' && (
           <div className="card" style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--text-primary)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Ticket size={16} color="var(--pink)" /> Confirm Your Seat
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
+                {ride.seatsLeft} seat{ride.seatsLeft !== 1 ? 's' : ''} available · ₹{ride.price} per seat
+              </div>
+            </div>
             <div className="input-group" style={{ marginBottom: 12 }}>
               <div className="input-wrapper">
                 <MessageSquare className="input-icon" />
                 <input
                   type="text"
-                  placeholder="Add a message to the driver (optional)"
+                  placeholder="Add a note for the driver (optional)"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="has-icon"
                 />
               </div>
             </div>
-            <button className="btn btn-primary btn-full" onClick={handleRequest} disabled={requesting}>
-              {requesting ? 'Sending request...' : 'Request to Join'}
+            <button className="btn btn-primary btn-full" onClick={handleBook} disabled={booking}>
+              {booking ? 'Confirming...' : '🎉 Confirm & Book Seat'}
             </button>
           </div>
         )}
