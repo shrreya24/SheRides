@@ -13,7 +13,7 @@ const PostRidePage = () => {
   const [form, setForm] = useState({
     from: '', fromLat: null, fromLng: null,
     to: '', toLat: null, toLng: null,
-    date: '', time: '', seats: 1, price: '', vehicle: '', notes: '',
+    date: '', time: '', seats: 1, price: '', vehicle: '', vehicleNumber: '', notes: '',
   });
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ const PostRidePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.from || !form.to || !form.date || !form.time || !form.price || !form.vehicle) {
-      return toast.error('Please fill in all required fields.');
+      return toast.error('Please fill all required fields.');
     }
 
     setLoading(true);
@@ -44,6 +44,7 @@ const PostRidePage = () => {
         seats: parseInt(form.seats),
         price: parseFloat(form.price),
         vehicle: form.vehicle,
+        vehicleNumber: form.vehicleNumber,
         notes: form.notes,
         fromCoords: form.fromLat ? { lat: form.fromLat, lng: form.fromLng } : {},
         toCoords: form.toLat ? { lat: form.toLat, lng: form.toLng } : {},
@@ -152,6 +153,22 @@ const PostRidePage = () => {
               <div className="input-wrapper">
                 <Car className="input-icon" />
                 <input type="text" name="vehicle" placeholder="e.g. Maruti Swift, Honda City" value={form.vehicle} onChange={handleChange} className="has-icon" required />
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Vehicle Number <span className="required">*</span></label>
+              <div className="input-wrapper">
+                <Car className="input-icon" />
+                <input
+                  type="text"
+                  name="vehicleNumber"
+                  placeholder="e.g. KA01AB1234"
+                  value={form.vehicleNumber}
+                  onChange={handleChange}
+                  className="has-icon"
+                  required
+                  style={{ textTransform: 'uppercase' }}
+                />
               </div>
             </div>
             <div className="input-group" style={{ marginBottom: 0 }}>

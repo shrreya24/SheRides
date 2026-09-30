@@ -250,6 +250,15 @@ const RideDetailPage = () => {
             <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--lavender)', fontWeight: 600, fontSize: '0.9rem' }}>
               <Car size={16} color="var(--lavender)" />
               <span>{ride.vehicle}</span>
+              {ride.vehicleNumber && (
+                <span style={{
+                  background: 'var(--bg-lavender)', border: '1px solid var(--border-lavender)',
+                  borderRadius: 8, padding: '2px 10px', fontSize: '0.8rem',
+                  color: 'var(--lavender-dark)', fontWeight: 700, letterSpacing: '0.05em',
+                }}>
+                  {ride.vehicleNumber.toUpperCase()}
+                </span>
+              )}
             </div>
           )}
 

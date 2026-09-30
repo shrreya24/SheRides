@@ -6,7 +6,7 @@ const User = require('../models/User');
 // @access  Private
 const createRide = async (req, res) => {
   try {
-    const { from, to, date, time, seats, price, vehicle, notes, fromCoords, toCoords } = req.body;
+    const { from, to, date, time, seats, price, vehicle, vehicleNumber, notes, fromCoords, toCoords } = req.body;
 
     const ride = await Ride.create({
       driver: req.user._id,
@@ -17,6 +17,7 @@ const createRide = async (req, res) => {
       seats,
       price,
       vehicle,
+      vehicleNumber: vehicleNumber || '',
       notes,
       fromCoords: fromCoords || {},
       toCoords: toCoords || {},
@@ -74,7 +75,7 @@ const getRideById = async (req, res) => {
   try {
     const ride = await Ride.findById(req.params.id)
       .populate('driver', 'name profilePhoto rating ridesCount status isVerified phone')
-      .populate('passengers.user', 'name profilePhoto rating')
+      .populate('passengers.user', 'name profilePhoto rating phone')
       .lean();
 
     if (!ride) {
@@ -93,7 +94,7 @@ const getRideById = async (req, res) => {
 const getMyRides = async (req, res) => {
   try {
     const offeredRides = await Ride.find({ driver: req.user._id })
-      .populate('passengers.user', 'name profilePhoto rating')
+      .populate('passengers.user', 'name profilePhoto rating phone')
       .sort({ createdAt: -1 });
 
     const bookedRides = await Ride.find({

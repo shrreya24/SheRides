@@ -63,6 +63,11 @@ const rideSchema = new mongoose.Schema(
       required: [true, 'Vehicle name is required'],
       trim: true,
     },
+    vehicleNumber: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     notes: {
       type: String,
       default: '',

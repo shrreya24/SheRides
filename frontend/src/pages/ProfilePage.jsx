@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Edit2, Upload, Car, Star, ShieldCheck, ShieldOff, MapPin, Check, X } from 'lucide-react';
+import { LogOut, Edit2, Upload, Car, Star, ShieldCheck, ShieldOff, MapPin, Check, X, Phone, Users } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RideCard from '../components/RideCard';
 import { authAPI, rideAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const getInitials = (name = '') =>
   name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -20,7 +20,7 @@ const ProfilePage = () => {
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: user?.name || '', phone: user?.phone || '' });
   const [saving, setSaving] = useState(false);
-  const [tab, setTab] = useState('offered');
+  const [tab, setTab] = useState(user?.role === 'driver' ? 'offered' : 'booked');
   const fileRef = useRef();
 
   useEffect(() => { fetchMyRides(); }, []);
@@ -78,15 +78,22 @@ const ProfilePage = () => {
 
   if (!user) return null;
 
+  // For drivers: show offered rides with passenger details underneath
+  // For passengers: show booked rides with their booking status badge
+  const isDriver = user.role === 'driver';
   const displayedRides = tab === 'offered' ? myRides.offeredRides : myRides.bookedRides;
 
-  // Helper: get this user's booking status for a booked ride
+  // Helper: get this user's booking status for a booked ride (passenger view)
   const getBookingStatus = (ride) => {
     const passenger = ride.passengers?.find(
-      (p) => p.user?.toString() === user._id?.toString() || p.user === user._id
+      (p) => p.user?._id?.toString() === user._id?.toString() || p.user?.toString() === user._id?.toString()
     );
     return passenger?.status || 'pending';
   };
+
+  // Get accepted passengers on an offered ride (driver view)
+  const getAcceptedPassengers = (ride) =>
+    (ride.passengers || []).filter((p) => p.status === 'accepted');
 
   return (
     <>
@@ -213,12 +220,15 @@ const ProfilePage = () => {
         {/* My Rides */}
         <div className="section-title" style={{ marginBottom: 16 }}>My Rides</div>
         <div className="tab-bar">
-          <button className={`tab-btn${tab === 'offered' ? ' active' : ''}`} onClick={() => setTab('offered')}>
-            Offered ({myRides.offeredRides.length})
-          </button>
-          <button className={`tab-btn${tab === 'booked' ? ' active' : ''}`} onClick={() => setTab('booked')}>
-            Booked ({myRides.bookedRides.length})
-          </button>
+          {isDriver ? (
+            <button className={`tab-btn${tab === 'offered' ? ' active' : ''}`} onClick={() => setTab('offered')}>
+              Offered ({myRides.offeredRides.length})
+            </button>
+          ) : (
+            <button className={`tab-btn${tab === 'booked' ? ' active' : ''}`} onClick={() => setTab('booked')}>
+              My Bookings ({myRides.bookedRides.length})
+            </button>
+          )}
         </div>
 
         {ridesLoading ? (
@@ -226,15 +236,78 @@ const ProfilePage = () => {
         ) : displayedRides.length === 0 ? (
           <div className="empty-state">
             <MapPin />
-            <h3>{tab === 'offered' ? 'No rides offered yet' : 'No rides booked yet'}</h3>
-            <p>Your {tab} rides will appear here</p>
+            <h3>{isDriver ? 'No rides offered yet' : 'No rides booked yet'}</h3>
+            <p>{isDriver ? 'Post a ride to get started' : 'Find a ride and book your seat'}</p>
           </div>
+        ) : isDriver && tab === 'offered' ? (
+          // Driver view: ride card + passenger manifest below
+          displayedRides.map(ride => {
+            const accepted = getAcceptedPassengers(ride);
+            return (
+              <div key={ride._id} style={{ marginBottom: 16 }}>
+                {/* No bookingStatus badge for driver's own rides */}
+                <RideCard ride={ride} />
+
+                {/* Passenger manifest */}
+                {accepted.length > 0 && (
+                  <div style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderTop: '2px solid var(--lavender)',
+                    borderRadius: '0 0 var(--radius-md) var(--radius-md)',
+                    padding: '14px 18px',
+                    marginTop: -8,
+                  }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      fontSize: '0.75rem', fontWeight: 700,
+                      color: 'var(--lavender-dark)', textTransform: 'uppercase',
+                      letterSpacing: '0.5px', marginBottom: 10,
+                    }}>
+                      <Users size={13} /> {accepted.length} Passenger{accepted.length !== 1 ? 's' : ''} Booked
+                    </div>
+                    {accepted.map((p, i) => (
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        paddingTop: i > 0 ? 10 : 0,
+                        borderTop: i > 0 ? '1px solid var(--border)' : 'none',
+                      }}>
+                        <div className="driver-avatar" style={{ width: 34, height: 34, fontSize: '0.75rem', flexShrink: 0 }}>
+                          {p.user?.profilePhoto
+                            ? <img src={p.user.profilePhoto} alt={p.user?.name} />
+                            : getInitials(p.user?.name || '?')}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                            {p.user?.name || 'Unknown'}
+                          </div>
+                          {p.user?.phone && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                              <Phone size={11} /> {p.user.phone}
+                            </div>
+                          )}
+                        </div>
+                        <span style={{
+                          background: '#D1FAE5', color: '#065F46',
+                          border: '1px solid #6EE7B7',
+                          padding: '2px 10px', borderRadius: 20,
+                          fontSize: '0.7rem', fontWeight: 700,
+                          textTransform: 'uppercase',
+                        }}>Confirmed</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })
         ) : (
+          // Passenger view: booked rides with booking status badge
           displayedRides.map(ride => (
             <RideCard
               key={ride._id}
               ride={ride}
-              bookingStatus={tab === 'booked' ? getBookingStatus(ride) : undefined}
+              bookingStatus={getBookingStatus(ride)}
             />
           ))
         )}
