@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Edit2, Upload, Car, Star, ShieldCheck, ShieldOff, MapPin, Check, X, Phone, Users, User } from 'lucide-react';
+import { LogOut, Edit2, Upload, Car, ShieldCheck, ShieldOff, MapPin, Check, X, Phone, Users, User } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RideCard from '../components/RideCard';
@@ -197,9 +197,11 @@ const ProfilePage = () => {
             <span className="stat-label">Rides</span>
           </div>
           <div className="stat-card">
-            <Star className="stat-icon" style={{ fill: '#FDE68A', color: '#F59E0B' }} />
-            <span className="stat-value">{user.rating?.toFixed(1)}</span>
-            <span className="stat-label">Rating</span>
+            <ShieldCheck className="stat-icon" style={{ color: user.isVerified ? '#22C55E' : 'var(--text-muted)' }} />
+            <span className="stat-value" style={{ fontSize: '0.85rem', color: user.isVerified ? '#22C55E' : 'var(--text-muted)' }}>
+              {user.isVerified ? 'Verified' : 'Unverified'}
+            </span>
+            <span className="stat-label">Identity</span>
           </div>
           <div className="stat-card">
             <ShieldCheck className="stat-icon" />

@@ -76,7 +76,6 @@ const RequestsPage = () => {
       <div className="page">
         <div className="page-header">
           <h2>Requests</h2>
-          <p>Manage ride requests</p>
         </div>
 
         <div className="tab-bar">
