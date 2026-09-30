@@ -81,9 +81,6 @@ const Navbar = () => {
                   ? <img src={user.profilePhoto} alt={user.name} />
                   : getInitials(user.name)}
               </NavLink>
-              <span className="header-user-role-badge">
-                {user.role === 'driver' ? '🚗 Driver' : '🎒 Passenger'}
-              </span>
               <button onClick={handleLogout} className="btn btn-sm btn-secondary" style={{ gap: 6 }}>
                 <LogOut size={14} /> Logout
               </button>

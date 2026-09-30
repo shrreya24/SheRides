@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Edit2, Upload, Car, Star, ShieldCheck, ShieldOff, MapPin, Check, X, Phone, Users } from 'lucide-react';
+import { LogOut, Edit2, Upload, Car, Star, ShieldCheck, ShieldOff, MapPin, Check, X, Phone, Users, User } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RideCard from '../components/RideCard';
@@ -148,11 +148,26 @@ const ProfilePage = () => {
                 </div>
               ) : (
                 <>
-                  <div style={{ fontWeight: 700, fontSize: '1.125rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontWeight: 700, fontSize: '1.125rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                     {user.name}
                     {user.isVerified
                       ? <ShieldCheck size={18} color="#22C55E" />
                       : <ShieldOff size={18} color="var(--text-muted)" />}
+                    {/* Role badge */}
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      background: user.role === 'driver' ? 'linear-gradient(135deg,#EDE9FE,#F5F3FF)' : 'linear-gradient(135deg,#FFF0F6,#FDF4FF)',
+                      border: `1px solid ${user.role === 'driver' ? 'var(--border-lavender)' : 'rgba(214,51,132,0.2)'}`,
+                      borderRadius: 20, padding: '2px 10px',
+                      fontSize: '0.72rem', fontWeight: 700,
+                      color: user.role === 'driver' ? 'var(--lavender-dark)' : '#b02770',
+                      textTransform: 'capitalize',
+                    }}>
+                      {user.role === 'driver'
+                        ? <Car size={11} />
+                        : <User size={11} />}
+                      {user.role}
+                    </span>
                   </div>
                   <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: 3 }}>{user.email}</div>
                   <div style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: 1 }}>{user.phone}</div>

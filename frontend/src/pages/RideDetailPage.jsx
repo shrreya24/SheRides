@@ -80,7 +80,7 @@ const RideDetailPage = () => {
     setBooking(true);
     try {
       await rideAPI.bookRide(id, { message });
-      toast.success('🎉 Seat confirmed! You are booked.');
+      toast.success('Seat confirmed! You are booked.');
       fetchRide();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Booking failed.');
@@ -125,7 +125,7 @@ const RideDetailPage = () => {
         comment: reviewComment,
         revieweeId: reviewTarget,
       });
-      toast.success('Review submitted! ⭐');
+      toast.success('Review submitted!');
       setHasReviewed(true);
       fetchReviews();
     } catch (err) {
@@ -372,7 +372,7 @@ const RideDetailPage = () => {
               </div>
             </div>
             <button className="btn btn-primary btn-full" onClick={handleBook} disabled={booking}>
-              {booking ? 'Confirming...' : '🎉 Confirm & Book Seat'}
+              {booking ? 'Confirming...' : <><Ticket size={15} /> Confirm &amp; Book Seat</>}
             </button>
           </div>
         )}

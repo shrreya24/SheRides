@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, HelpCircle, ChevronDown, ChevronUp, Shield, Star } from 'lucide-react';
+import { MessageCircle, HelpCircle, ChevronDown, ChevronUp, Shield, Star, Lightbulb, Heart, Map, CheckCircle, MapPin, Lock } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -26,44 +26,51 @@ const FAQS = [
   },
   {
     q: 'How do I get verified as a driver?',
-    a: 'Go to your Profile page and tap "Verify Your Identity." Upload a clear photo of your government-issued ID. Once approved (usually within 24 hours), you\'ll receive a Verified badge and can start posting rides.',
+    a: "Go to your Profile page and tap \"Verify Your Identity.\" Upload a clear photo of your government-issued ID. Once approved (usually within 24 hours), you'll receive a Verified badge and can start posting rides.",
   },
   {
     q: 'How does live tracking work?',
-    a: 'Once a driver starts a ride, they can share their real-time GPS location. Passengers can see the driver\'s live position on the map and share that link with family members for added safety.',
+    a: "Once a driver starts a ride, they can share their real-time GPS location. Passengers can see the driver's live position on the map and share that link with family members for added safety.",
   },
   {
     q: 'Can I cancel a ride request I sent?',
-    a: 'Currently you can view the status of your requests in the Requests page. If you need to cancel, please message the driver directly. We\'re working on a one-tap cancellation feature.',
+    a: "Currently you can view the status of your requests in the Requests page. If you need to cancel, please message the driver directly. We're working on a one-tap cancellation feature.",
   },
 ];
 
 const TIPS = [
   {
     initials: 'SM', name: 'Sneha Menon', date: '2 days ago',
-    content: 'Always share your ride details (driver name, car number, and your live location) with a family member before getting in. It takes 30 seconds and gives enormous peace of mind! 🙏',
-    tag: '💡 Safety Tip',
+    content: 'Always share your ride details (driver name, car number, and your live location) with a family member before getting in. It takes 30 seconds and gives enormous peace of mind!',
+    icon: <Shield size={13} />, tag: 'Safety Tip', tagColor: '#D63384',
   },
   {
     initials: 'DK', name: 'Deepa K.', date: '4 days ago',
-    content: 'For intercity rides I always check the driver\'s rating and total rides completed. Members with 20+ rides and a "Trusted" status are amazing — super reliable and great company!',
-    tag: '⭐ Travel Tip',
+    content: "For intercity rides I always check the driver's rating and total rides completed. Members with 20+ rides and a \"Trusted\" status are amazing — super reliable and great company!",
+    icon: <Star size={13} />, tag: 'Travel Tip', tagColor: '#F59E0B',
   },
   {
     initials: 'PV', name: 'Pooja Verma', date: '1 week ago',
-    content: 'Just completed my 50th ride on SheRides! 🎉 Met so many incredible women. It\'s not just a carpool app anymore — it\'s a community. Highly recommend connecting with your regular drivers.',
-    tag: '❤️ Community',
+    content: "Just completed my 50th ride on SheRides! Met so many incredible women. It's not just a carpool app anymore — it's a community. Highly recommend connecting with your regular drivers.",
+    icon: <Heart size={13} />, tag: 'Community', tagColor: '#EC4899',
   },
   {
     initials: 'NS', name: 'Nandita S.', date: '1 week ago',
-    content: 'Daily commuter hack: search for the same time slots every day and request the same verified driver. Many of us have become regulars on our routes and it\'s so much more comfortable than random bookings!',
-    tag: '💡 Commuter Tip',
+    content: 'Daily commuter hack: search for the same time slots every day and request the same verified driver. Many of us have become regulars on our routes and it\'s so much more comfortable!',
+    icon: <Lightbulb size={13} />, tag: 'Commuter Tip', tagColor: '#8B5CF6',
   },
   {
     initials: 'RT', name: 'Ritu Tiwari', date: '2 weeks ago',
     content: 'Pro tip: add your coordinates when posting or requesting a ride. The map view is incredibly useful for passengers to see exactly where pickup and dropoff points are.',
-    tag: '🗺️ Map Tip',
+    icon: <Map size={13} />, tag: 'Map Tip', tagColor: '#0EA5E9',
   },
+];
+
+const SAFETY_FEATURES = [
+  { icon: <CheckCircle size={16} />, label: 'ID-Verified Members' },
+  { icon: <MapPin size={16} />, label: 'Live GPS Tracking' },
+  { icon: <Star size={16} />, label: 'Rating System' },
+  { icon: <Lock size={16} />, label: 'Women-Only Space' },
 ];
 
 const FaqItem = ({ faq }) => {
@@ -86,7 +93,7 @@ const CommunityPage = () => (
     <Navbar />
     <div className="community-page">
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <div className="community-hero">
         <div className="container">
           <h1>Community &amp; Support</h1>
@@ -97,7 +104,7 @@ const CommunityPage = () => (
         </div>
       </div>
 
-      {/* ── Main Content ── */}
+      {/* Main Content */}
       <div className="community-content">
 
         {/* FAQ Column */}
@@ -130,7 +137,7 @@ const CommunityPage = () => (
             <Shield size={18} color="var(--pink)" style={{ flexShrink: 0, marginTop: 1 }} />
             <span>
               This is a moderated, women-only community. All members are
-              identity-verified. Stay safe, be kind, and lift each other up. 💜
+              identity-verified. Stay safe, be kind, and lift each other up.
             </span>
           </div>
 
@@ -145,14 +152,16 @@ const CommunityPage = () => (
                   </div>
                 </div>
                 <p className="tip-card-content">{tip.content}</p>
-                <span className="tip-card-tag">{tip.tag}</span>
+                <span className="tip-card-tag" style={{ color: tip.tagColor, background: `${tip.tagColor}18`, border: `1px solid ${tip.tagColor}30` }}>
+                  {tip.icon} {tip.tag}
+                </span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── Safety Banner ── */}
+      {/* Safety Banner */}
       <div style={{ background: 'var(--gradient-primary)', padding: '72px 0', marginTop: 20 }}>
         <div className="container" style={{ textAlign: 'center' }}>
           <Shield size={44} color="white" style={{ margin: '0 auto 18px', display: 'block', opacity: 0.9 }} />
@@ -164,20 +173,16 @@ const CommunityPage = () => (
             Always share your ride details with a trusted contact before traveling.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
-            {[
-              '✅ ID-Verified Members',
-              '📍 Live GPS Tracking',
-              '⭐ Rating System',
-              '🔒 Women-Only Space',
-            ].map(item => (
-              <div key={item} style={{
+            {SAFETY_FEATURES.map(({ icon, label }) => (
+              <div key={label} style={{
                 background: 'rgba(255,255,255,0.15)',
                 border: '1px solid rgba(255,255,255,0.25)',
                 borderRadius: '50px', padding: '10px 22px',
                 color: 'white', fontSize: '0.9rem', fontWeight: 600,
                 backdropFilter: 'blur(8px)',
+                display: 'flex', alignItems: 'center', gap: 8,
               }}>
-                {item}
+                {icon} {label}
               </div>
             ))}
           </div>

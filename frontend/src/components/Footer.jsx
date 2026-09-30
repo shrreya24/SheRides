@@ -63,7 +63,11 @@ const Footer = () => (
           <Shield size={12} />
           Women-Only Platform
         </div>
-        <span>Empowering women through safe travel 🚗💜</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', fontSize: '0.8125rem' }}>
+          <Car size={13} color="rgba(255,255,255,0.45)" />
+          Empowering women through safe travel
+          <Heart size={13} color="#e879a0" fill="#e879a0" />
+        </span>
       </div>
     </div>
   </footer>

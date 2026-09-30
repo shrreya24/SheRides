@@ -25,26 +25,26 @@ export const SocketProvider = ({ children }) => {
 
       s.on('connect', () => {
         setConnected(true);
-        console.log('🔌 Socket connected');
+        console.log('Socket connected');
       });
 
       s.on('disconnect', () => {
         setConnected(false);
-        console.log('❌ Socket disconnected');
+        console.log('Socket disconnected');
       });
 
       // Listen for request-update notifications (passenger gets alerted when driver accepts/rejects)
       s.on('request-update', ({ from, to, status }) => {
         if (status === 'accepted') {
-          toast.success(`✅ Your request for ${from} → ${to} was accepted!`);
+          toast.success(`Request for ${from} to ${to} was accepted!`);
         } else {
-          toast.error(`❌ Your request for ${from} → ${to} was not accepted.`);
+          toast.error(`Request for ${from} to ${to} was not accepted.`);
         }
       });
 
       // Driver gets notified when a passenger instantly books a seat
       s.on('seat-booked', ({ from, to, passengerName }) => {
-        toast.success(`🎉 ${passengerName} booked a seat on your ride: ${from} → ${to}`);
+        toast.success(`${passengerName} booked a seat: ${from} to ${to}`);
       });
     }
 
