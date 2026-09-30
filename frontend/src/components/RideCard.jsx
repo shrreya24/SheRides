@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CalendarDays, Timer, UsersRound, Banknote, Car, Star, ShieldCheck } from 'lucide-react';
+import { CalendarDays, Timer, UsersRound, Banknote, Car, ShieldCheck } from 'lucide-react';
 
 const getInitials = (name = '') =>
   name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -74,8 +74,10 @@ const RideCard = ({ ride, bookingStatus }) => {
               )}
             </div>
             <div className="driver-rating">
-              <Star size={12} fill="#F59E0B" color="#F59E0B" />
-              <span>{driver?.rating?.toFixed(1) || '5.0'}</span>
+              <ShieldCheck size={12} color={driver?.isVerified ? "#22C55E" : "#9CA3AF"} />
+              <span style={{ color: driver?.isVerified ? '#22C55E' : '#9CA3AF', fontWeight: 600 }}>
+                {driver?.isVerified ? 'Verified' : 'Unverified'}
+              </span>
               <span style={{ margin: '0 4px', color: '#ddd' }}>·</span>
               <span className={`badge ${statusClass}`} style={{ padding: '2px 8px', fontSize: '0.6875rem' }}>
                 {status}
